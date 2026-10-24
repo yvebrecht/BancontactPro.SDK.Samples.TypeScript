@@ -101,7 +101,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       const reference = text(body.reference);
       const common = { amount: Number(body.amount), callbackUrl: callbackUrl(), ...(description ? { description } : {}), ...(reference ? { reference } : {}) };
       const created = product === 'StaticQr'
-        ? await payments.createStaticQrPayment({ ...common, posId: text(body.posId) ?? 'pos-1' })
+        ? await payments.createStaticQrPayment({ ...common, posId: text(body.posId) ?? 'POS00001' })
         : await payments.create(common);
       return sendJson(res, 201, view(created));
     } catch (error) {
@@ -167,7 +167,7 @@ async function qrRoute(url: URL, res: ServerResponse): Promise<void> {
     amount: url.searchParams.get('amount') ?? '100',
     description: url.searchParams.get('description') ?? 'sample',
     reference: url.searchParams.get('reference') ?? '',
-    posId: url.searchParams.get('posId') ?? 'pos-1',
+    posId: url.searchParams.get('posId') ?? 'POS00001',
     format: url.searchParams.get('format') ?? 'PNG',
   };
   if (!url.searchParams.has('product')) return send(res, 200, qrPage(PRODUCTS, q));
