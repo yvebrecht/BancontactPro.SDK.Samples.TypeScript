@@ -1,0 +1,69 @@
+# BancontactPro.SDK.Samples.TypeScript
+
+> **This is not an official Bancontact project.** Independent samples for the unofficial [BancontactPro.SDK](https://github.com/yvebrecht/BancontactPro.SDK) libraries.
+
+A small web UI over the TypeScript client, to try a payment by hand against Bancontact's preprod with the Bancontact Pay test app,
+and to see what goes over the wire while you do. It uses only Node's built-in `http` module (no web framework) and is meant to run
+**locally**: it listens on `localhost` only and has no login, because it calls Bancontact with your credentials.
+
+The package is not published yet, so the sample depends on the sister folder: clone and build `BancontactPro.TypeScript` next to this repo
+(`npm ci && npm run build` there). Once published, the dependency becomes a normal version.
+
+## Pages
+
+| Page | What it does |
+|---|---|
+| Status | Environment, which products have credentials, the callback URL. |
+| Payment | Creates a payment (or a Static QR payment with a POS ID), shows the QR code and deeplink, follows the status every 2 s and from callbacks, cancels. The debug panel below follows that payment. |
+| QR test | Builds the self-made payload URLs (`/t/1/{PPID}` and `/l/1/{PPID}/{POSId}`) and the generator image, without an API call. Scan with the preprod test app. |
+| Callbacks | The verified callbacks Bancontact sent to `POST /bancontact/callback`. |
+| Debug | Everything below, unfiltered. |
+
+## Debug information
+
+Every call the library makes to Bancontact and every callback goes into the debug log:
+
+- request: method, URL, headers (the `Authorization` API key is masked to its last 4 characters; the `Signature` header is shown), body;
+- response: status, headers, body, duration; for errors the `traceId` and `spanId` that Bancontact support asks for;
+- callback: all received headers (including `Signature`), the exact body, and the verification result. A rejected callback shows the reason;
+- the JWKS fetches of the callback verifier appear as requests too.
+
+This works through the library's injectable `fetch` (`BancontactClientFactory` option `fetch`, see `src/debug.ts`). The library adds the
+`Authorization` and `Signature` headers before calling it, so the log shows the request as it was sent.
+
+## Run
+
+Needs Node.js 22.18 or later (it runs the `.ts` files directly).
+
+```bash
+npm install
+cp .env.example .env   # fill in the API key and PPID of each product you want to try
+npm start
+```
+
+Open http://localhost:5085. The environment is `Preprod` unless `BANCONTACT_ENVIRONMENT=Production`: do not point this sample at production with real money.
+`npm run typecheck` checks the types.
+
+## Docker
+
+Because the library is a sister folder, the image is built from the folder that holds both repositories (`docker-compose.yml` sets that context).
+
+```bash
+cp .env.example .env   # fill in the credentials
+docker compose up --build
+```
+
+Open http://localhost:5085. The port is published on `127.0.0.1` only, as the app has no login. `.env` also sets `PUBLIC_BASE_URL` and `SAMPLE_WEB_PORT`.
+
+## Callbacks
+
+Bancontact must reach `POST /bancontact/callback` over public HTTPS. Start a tunnel to port 5085, set `PUBLIC_BASE_URL` to the tunnel's address
+(no trailing slash) in `.env`, and restart. The Payment page sends `PUBLIC_BASE_URL` + `/bancontact/callback` as the payment's `callbackUrl`.
+Without it the callback URL is `http://localhost:5085/...`, which Bancontact cannot reach: the payment still works, you just follow it by polling.
+The signature covers the request path, so the tunnel must not rewrite it.
+
+## Licence
+
+Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE). Copyright 2026 Axel Dewaele.
+
+This is an independent, unofficial project. It is not affiliated with, endorsed by or sponsored by Bancontact. "Bancontact" and "Bancontact Pro" are trademarks of their respective owner. The names are used here only to describe what the samples work with. The licence does not grant any right in those trademarks, and the copyright holder does not claim any.

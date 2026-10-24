@@ -1,0 +1,11 @@
+# The build context is the folder above both repositories: keep everything but what the build needs.
+*
+!BancontactPro.TypeScript/package.json
+!BancontactPro.TypeScript/package-lock.json
+!BancontactPro.TypeScript/tsconfig*.json
+!BancontactPro.TypeScript/src/**
+!BancontactPro.SDK.Samples.TypeScript/package.json
+!BancontactPro.SDK.Samples.TypeScript/package-lock.json
+!BancontactPro.SDK.Samples.TypeScript/src/**
+!BancontactPro.SDK.Samples.TypeScript/public/**
+**/node_modules
