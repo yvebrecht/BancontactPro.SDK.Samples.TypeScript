@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dewall88/bancontactpro": "file:../BancontactPro.TypeScript"
+    "@yvebrecht/bancontactpro": "file:../BancontactPro.TypeScript"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

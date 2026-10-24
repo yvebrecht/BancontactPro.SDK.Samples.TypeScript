@@ -9,8 +9,8 @@ import {
   ProductNotConfiguredError,
   QrCodeImageFormat,
   qr,
-} from '@dewall88/bancontactpro';
-import type { BancontactProduct, CreatePaymentResponse, MerchantCallback, Payment } from '@dewall88/bancontactpro';
+} from '@yvebrecht/bancontactpro';
+import type { BancontactProduct, CreatePaymentResponse, MerchantCallback, Payment } from '@yvebrecht/bancontactpro';
 import { PRODUCTS, parseProduct, publicBaseUrl, readCredentials } from './config.ts';
 import { DebugLog, debugFetch, pretty } from './debug.ts';
 import { callbacksPage, debugPage, payPage, qrPage, statusPage } from './views.ts';
