@@ -10,6 +10,10 @@ export interface DebugEntry {
   elapsedMs?: number;
   requestHeaders: Record<string, string>;
   requestBody?: string;
+  /** The body exactly as received (not pretty-printed): the bytes a callback signature covers. */
+  rawRequestBody?: string;
+  /** What the sample worked out about a callback's Signature header, to show why a verification failed. */
+  analysis?: string;
   responseHeaders: Record<string, string>;
   responseBody?: string;
   traceId?: string;
