@@ -1,4 +1,4 @@
-import type { FetchLike } from '@dewall88/bancontactpro';
+import type { FetchLike } from '@yvebrecht/bancontactpro';
 
 export interface DebugEntry {
   at: string;

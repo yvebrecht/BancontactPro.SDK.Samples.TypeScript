@@ -1,5 +1,5 @@
-import { BancontactEnvironment, BancontactProduct } from '@dewall88/bancontactpro';
-import type { BancontactCredentials, ProductCredentials } from '@dewall88/bancontactpro';
+import { BancontactEnvironment, BancontactProduct } from '@yvebrecht/bancontactpro';
+import type { BancontactCredentials, ProductCredentials } from '@yvebrecht/bancontactpro';
 
 export const PRODUCTS = Object.values(BancontactProduct);
 
