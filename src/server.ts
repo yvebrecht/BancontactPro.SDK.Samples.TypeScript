@@ -12,6 +12,7 @@ import {
 } from '@dewall88/bancontactpro';
 import type { BancontactProduct, CreatePaymentResponse, MerchantCallback, Payment } from '@dewall88/bancontactpro';
 import { PRODUCTS, parseProduct, publicBaseUrl, readCredentials } from './config.ts';
+import { analyseSignature } from './diagnostics.ts';
 import { DebugLog, debugFetch, pretty } from './debug.ts';
 import { callbacksPage, debugPage, payPage, qrPage, statusPage } from './views.ts';
 
@@ -136,6 +137,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 async function handleCallback(req: IncomingMessage, res: ServerResponse, path: string): Promise<void> {
   const body = await readBody(req);
   const text = body.toString('utf8');
+  const analysis = analyseSignature(String(req.headers.signature ?? ''), body);
   const received = Object.fromEntries(Object.entries(req.headers).map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : (v ?? '')]));
   try {
     // The exact bytes received: re-serialising a parsed body first would change them and break the signature.
@@ -150,12 +152,14 @@ async function handleCallback(req: IncomingMessage, res: ServerResponse, path: s
       status: 200,
       requestHeaders: received,
       requestBody: pretty(text) as string,
+      rawRequestBody: text,
+      analysis,
       responseBody: `Signature valid. Bancontact request ID: ${verified.requestId}`,
     });
     send(res, 200, '');
   } catch (error) {
     if (!(error instanceof InvalidCallbackError)) throw error;
-    debug.add({ kind: 'callback', title: 'Callback rejected', method: 'POST', url: path, status: 401, requestHeaders: received, requestBody: pretty(text) as string, error: error.message });
+    debug.add({ kind: 'callback', title: 'Callback rejected', method: 'POST', url: path, status: 401, requestHeaders: received, requestBody: pretty(text) as string, rawRequestBody: text, analysis, error: error.message });
     send(res, 401, '');
   }
 }
